@@ -1,46 +1,47 @@
-// import { createContext, useState } from "react";
-// import axios from "axios";
 
+import {
+    createContext,
+    useState,
+    useCallback,
+    useContext
+} from "react";
 
-// export const DataContext = createContext(null)
-
-// export const DataProvider = ({ children }) => {
-//     const [data, setData] = useState()
-
-//     // fetching all products from api
-//     const fetchAllProducts = async () => {
-//         try {
-//             const res = await axios.get('https://fakestoreapi.com/products?limit=20')
-//             console.log(res)
-
-//         } catch (error) {
-//             console.log(error)
-//         }
-//     }
-
-//     return <DataContext.Provider value={{ data, setData, fetchAllProducts }}>
-//         {children}
-//     </DataContext.Provider>
-// }
-
-
-import { createContext, useState, useCallback } from "react";
 import axios from "axios";
 
 export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }) => {
+
+    // Store all products
     const [data, setData] = useState([]);
 
-    // Fetching all products from API
+    // Store all categories
+    const [category, setCategory] = useState([]);
+
+    // Fetch all products
     const fetchAllProducts = useCallback(async () => {
         try {
             const res = await axios.get(
                 "https://fakestoreapi.com/products?limit=20"
             );
 
-            console.log(res.data);
             setData(res.data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    // Fetch all categories
+    const fetchAllCategory = useCallback(async () => {
+        try {
+            const res = await axios.get(
+                "https://fakestoreapi.com/products/categories"
+            );
+
+            setCategory(res.data);
+
+            console.log(res.data);
 
         } catch (error) {
             console.log(error);
@@ -49,9 +50,20 @@ export const DataProvider = ({ children }) => {
 
     return (
         <DataContext.Provider
-            value={{ data, setData, fetchAllProducts }}
+            value={{
+                data,
+                setData,
+                fetchAllProducts,
+
+                category,
+                setCategory,
+                fetchAllCategory
+            }}
         >
             {children}
         </DataContext.Provider>
     );
 };
+
+// Custom hook to access DataContext
+export const getData = () => useContext(DataContext);
